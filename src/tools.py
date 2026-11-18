@@ -120,6 +120,11 @@ class Toolbox:
             "check_picks": self.check_picks,
         }
 
+    @property
+    def last_profile(self) -> Dict:
+        """The validated profile from the last successful rank_songs call ({} if none)."""
+        return dict(self._rank.profile)
+
     # --- Entry point -----------------------------------------------------
 
     def run(self, name: str, args: Optional[Dict] = None) -> ToolResult:
