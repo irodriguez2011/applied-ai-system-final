@@ -48,13 +48,13 @@ user_prefs = {
 
 ### Algorithm Recipe
 
-**Scoring rule (one song, 0–100 points)**
+**Scoring rule (one song, rescaled to 0–100 points)**
 
 | Feature | Max points | How it is scored |
 |---|---|---|
 | Mood | 30 | 30 for an exact match, 15 for a mood in the same cluster, 0 otherwise |
-| Genre | 20 | 20 for an exact match, 0 otherwise |
-| Energy | 20 | `(1 - abs(song - target)) * 20` |
+| Genre | 10 | 10 for an exact match, 0 otherwise |
+| Energy | 40 | `(1 - abs(song - target)) * 40` |
 | Valence | 10 | `(1 - abs(song - target)) * 10` |
 | Danceability | 8 | `(1 - abs(song - target)) * 8` |
 | Acousticness | 7 | `(1 - abs(song - target)) * 7` |
@@ -66,6 +66,9 @@ Rules that apply to every numeric feature:
 - **Tempo is normalized.** BPM is divided by 120 so it is on the same 0–1 scale as the other features.
 - **No negative points.** Any closeness value below 0 is set to 0.
 - **Reasons are recorded.** Each rule that awards points adds a short reason, such as `"mood match: focused"`, to explain the recommendation.
+- **Scores are rescaled.** The points above add up to 110, so the total is divided by 110 and multiplied by 100. Every final score is out of 100.
+
+These are the current weights. The first version used genre 20 and energy 20 (max 100). Genre was halved and energy doubled after a made-up song won on its genre label alone; see the model card's weight-shift experiment.
 
 **Mood clusters (partial credit)**
 
@@ -81,7 +84,7 @@ Most moods appear only once or twice in the dataset, so exact matching alone wou
 | Longing | sad, melancholic, yearning, nostalgic |
 | Moody | moody, mysterious, uncertain |
 
-Mood (30) is weighted above genre (20) because mood describes how the listener wants to feel, and listeners cross genre lines more often than mood lines. Genre gets no partial credit for now.
+Mood (30) is weighted above genre (10) because mood describes how the listener wants to feel, and listeners cross genre lines more often than mood lines. Genre gets no partial credit for now.
 
 **Ranking rule (all songs)**
 
@@ -108,85 +111,85 @@ flowchart TD
 Output from running `python -m src.main` with the current profile in `src/main.py`:
 
 ```text
-Loaded songs: 45
+Loaded songs: 47
 
 Top 5 recommendations
 ============================================================
 1. Midnight Coding
-    Final score: 98.75 / 100
-    Reasons:
-    - mood match: chill (+30 points)
-    - genre match: lofi (+20 points)
-    - energy closeness: 19.60/20 points
-    - valence closeness: 9.80/10 points
-    - danceability closeness: 7.84/8 points
-    - acousticness closeness: 6.51/7 points
-    - tempo closeness: 5.00/5 points
+   Final score: 98.50 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - genre match: lofi (+10 points)
+   - energy closeness: 39.20/40 points
+   - valence closeness: 9.80/10 points
+   - danceability closeness: 7.84/8 points
+   - acousticness closeness: 6.51/7 points
+   - tempo closeness: 5.00/5 points
 ------------------------------------------------------------
 2. Library Rain
-    Final score: 97.83 / 100
-    Reasons:
-    - mood match: chill (+30 points)
-    - genre match: lofi (+20 points)
-    - energy closeness: 19.00/20 points
-    - valence closeness: 9.80/10 points
-    - danceability closeness: 7.84/8 points
-    - acousticness closeness: 6.44/7 points
-    - tempo closeness: 4.75/5 points
+   Final score: 97.12 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - genre match: lofi (+10 points)
+   - energy closeness: 38.00/40 points
+   - valence closeness: 9.80/10 points
+   - danceability closeness: 7.84/8 points
+   - acousticness closeness: 6.44/7 points
+   - tempo closeness: 4.75/5 points
 ------------------------------------------------------------
 3. Focus Flow
-    Final score: 84.82 / 100
-    Reasons:
-    - mood cluster match: Calm (+15 points)
-    - genre match: lofi (+20 points)
-    - energy closeness: 20.00/20 points
-    - valence closeness: 9.90/10 points
-    - danceability closeness: 8.00/8 points
-    - acousticness closeness: 7.00/7 points
-    - tempo closeness: 4.92/5 points
+   Final score: 86.20 / 100
+   Reasons:
+   - mood cluster match: Calm (+15 points)
+   - genre match: lofi (+10 points)
+   - energy closeness: 40.00/40 points
+   - valence closeness: 9.90/10 points
+   - danceability closeness: 8.00/8 points
+   - acousticness closeness: 7.00/7 points
+   - tempo closeness: 4.92/5 points
 ------------------------------------------------------------
-4. Spacewalk Thoughts
-    Final score: 73.65 / 100
-    Reasons:
-    - mood match: chill (+30 points)
-    - energy closeness: 17.60/20 points
-    - valence closeness: 9.30/10 points
-    - danceability closeness: 6.48/8 points
-    - acousticness closeness: 6.02/7 points
-    - tempo closeness: 4.25/5 points
+4. Pink Dolphin Sunset
+   Final score: 85.57 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - energy closeness: 40.00/40 points
+   - valence closeness: 9.20/10 points
+   - danceability closeness: 7.20/8 points
+   - acousticness closeness: 3.64/7 points
+   - tempo closeness: 4.08/5 points
 ------------------------------------------------------------
-5. Coffee Shop Stories
-    Final score: 61.35 / 100
-    Reasons:
-    - mood cluster match: Calm (+15 points)
-    - energy closeness: 19.40/20 points
-    - valence closeness: 8.70/10 points
-    - danceability closeness: 7.52/8 points
-    - acousticness closeness: 6.23/7 points
-    - tempo closeness: 4.50/5 points
+5. Spacewalk Thoughts
+   Final score: 82.95 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - energy closeness: 35.20/40 points
+   - valence closeness: 9.30/10 points
+   - danceability closeness: 6.48/8 points
+   - acousticness closeness: 6.02/7 points
+   - tempo closeness: 4.25/5 points
 ------------------------------------------------------------
 ```
 
 ### Expected Results for the Example Profile
 
-Running this recipe by hand on the 45-song dataset gives:
+Running this recipe on the 47-song dataset with the "Late-Night Study Session" profile above gives:
 
 | Rank | Song | Genre / Mood | Score |
 |---|---|---|---|
 | 1 | Focus Flow | lofi / focused | 99.8 |
-| 2 | Midnight Coding | lofi / chill | 83.8 |
-| 3 | Library Rain | lofi / chill | 82.8 |
-| 4 | Coffee Shop Stories | jazz / relaxed | 61.3 |
-| 5 | Dreamscape Drift | dream pop / dreamy | 60.5 |
+| 2 | Midnight Coding | lofi / chill | 84.9 |
+| 3 | Library Rain | lofi / chill | 83.5 |
+| 4 | Coffee Shop Stories | jazz / relaxed | 73.4 |
+| 5 | Enfant (feat. The Shacks) | r&b / dreamy | 72.8 |
 
-The lowest-scoring songs are Iron Furnace (metal / angry, 24.8) and Redline Reverie (drum and bass / anxious, 24.2). These numbers are a target for testing the implementation.
+The lowest-scoring songs are Storm Runner (rock / intense, 36.6) and Iron Furnace (metal / angry, 30.4). These numbers are a target for testing the implementation.
 
 ### Potential Biases
 
-- **Labels can outweigh sound.** Mood and genre together are worth up to 50 of the 100 points. A song with matching labels but a poor numeric fit can beat a song that sounds right but has different labels.
-- **Mood is favored over genre.** Mood is weighted 30 and genre 20, so a song in the user's favorite genre with an unrelated mood may be ranked below songs from genres the user never listens to.
+- **Labels can outweigh sound.** Mood and genre together are worth up to 40 of the 110 raw points (about 36% of the final score). A song with matching labels but a poor numeric fit can beat a song that sounds right but has different labels.
+- **Mood is favored over genre.** Mood is weighted 30 and genre 10, so a song in the user's favorite genre with an unrelated mood may be ranked below songs from genres the user never listens to.
 - **Exact genre matching ignores close neighbors.** A lofi fan gets no genre credit for ambient or jazz, so great songs in similar genres can be buried.
-- **The catalog is unbalanced.** Lofi and pop have 3 songs each, while almost every other genre has only 1. Users whose favorite genre has more songs get more strong matches to choose from.
+- **The catalog is unbalanced.** R&b has 11 songs and afrobeats 10, but hip-hop has only 2 because clean (non-explicit) hip-hop is rare, and most contrast genres have 1. Users whose favorite genre has more songs get more strong matches to choose from.
 - **The example profile leans toward lofi.** Its numeric targets are the average of the lofi songs, so it naturally favors lofi over other calm music.
 - **The mood clusters reflect personal judgment.** Grouping moods like "nostalgic" with "sad" is a subjective choice. Another person might group them differently and get different recommendations.
 
@@ -194,9 +197,9 @@ The lowest-scoring songs are Iron Furnace (metal / angry, 24.8) and Redline Reve
 
 - Genre is exact-match only, so similar genres (for example lofi and ambient) get no credit for being close.
 - Mood clusters are hand-made and reflect one person's judgment.
-- Labels (mood + genre) can still be worth up to 50 of the 100 points, so a song with matching labels but poor numeric fit can rank high.
+- Labels (mood + genre) are still worth up to 40 of the 110 raw points, so a song with matching labels but poor numeric fit can rank high.
 - The system does not learn from listening history or other users, so it cannot do collaborative filtering.
-- The profile allows only one favorite genre and one favorite mood. Real listeners often like several. For example, a listener who enjoys hip-hop, r&b, afrobeats, reggaeton, and bachata has to pick just one (r&b). In testing, that profile ranked the reggaeton song *Calle Caliente* 13th, below chiptune and gospel songs, because the other four favorite genres earn no genre points. A list such as `"favorite_genres": ["hip-hop", "r&b", "afrobeats", "reggaeton", "bachata"]` would fix this.
+- The profile allows only one favorite genre and one favorite mood. Real listeners often like several. For example, a listener who enjoys r&b, afrobeats, reggaeton, and bachata has to pick just one (r&b). In testing, an r&b + romantic profile ranked *Bed* (r&b) 1st, but the next r&b song, *Best Part*, came 10th, behind romantic reggaeton, bachata and afrobeats songs. A list such as `"favorite_genres": ["r&b", "afrobeats", "reggaeton", "bachata"]` would let the user say which genres they want.
 - There is no way to mark a feature as "I don't care," so every feature always counts toward the score.
 - Distance is treated the same on both sides of a target. With a target energy of 0.40, songs at 0.30 and 0.50 score the same, even though a study listener might prefer the quieter one.
 

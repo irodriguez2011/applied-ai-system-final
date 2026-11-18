@@ -20,19 +20,19 @@ It does not predict a rating or a play. It ranks songs by how closely they match
 
 ## 3. Data Used
 
-- **Size:** 53 songs in `data/songs.csv`.
-- **Variety:** 41 genres and 33 moods.
+- **Size:** 47 songs in `data/songs.csv`.
+- **Variety:** 13 genres and 24 moods.
 - **Features per song:** title, artist, genre, mood, energy, tempo (BPM), valence, danceability, and acousticness.
 - **Where the songs came from:**
-  - Songs 1–10 came with the starter project.
-  - Songs 11–45 are made-up songs I added to cover more genres and moods.
-  - Songs 46–53 are real songs by artists I listen to. Their feature values are estimates, not official data.
+  - Songs 1–37 are real songs from my own Apple Music library: 11 r&b, 10 afrobeats, 7 reggaeton, 7 bachata, and 2 hip-hop. I kept only songs without the explicit (E) badge, because this project is on my resume. Their feature values and mood labels are my estimates, not official data.
+  - Songs 38–47 are made-up "contrast" songs (lofi, jazz, ambient, classical, rock, metal, pop, folk) kept from the starter and my Module 3 catalog. They let me check that very different profiles get very different results.
+  - Earlier versions had 53 mostly made-up songs. I replaced them in Project 4 so I could judge results by ear.
 
 **Limits of the data:**
 
-- Most genres have only 1 or 2 songs. The biggest is bachata, with 4.
-- Most songs are made up, so nobody can judge them by ear.
-- The real songs' numbers are guesses about how they sound.
+- Genres are unbalanced. R&b has 11 songs, but hip-hop has only 2 because almost all current rap is explicit, and most contrast genres have 1.
+- The real songs' numbers and moods are my guesses about how they sound.
+- Leaving out explicit songs means the catalog does not fully match my real taste.
 - There is no listening history, like plays, skips, or likes.
 - There is no information about lyrics, language, or release year.
 
@@ -76,19 +76,19 @@ A song earns more points the **closer** it is to the user's target. Being higher
 **What works well**
 
 - When a song matches the genre, the mood, and the sound, it lands at the top. For a "chill lofi" listener, the top 3 are all calm lofi songs.
-- Mood groups help. Calm songs from other genres, like ambient and jazz, still show up for a chill listener.
-- Loud, intense songs (metal, punk) correctly sink to the bottom for calm listeners.
+- Mood groups help. Calm songs from other genres still show up for a chill listener: the real r&b song *Pink Dolphin Sunset* ranks 4th, ahead of ambient and jazz.
+- Loud, intense songs (rock, metal) correctly sink to the bottom for calm listeners.
 
 **Single-genre limit**
 
-- The profile allows only one favorite genre, but I like five: hip-hop, r&b, afrobeats, reggaeton, and bachata.
-- I had to pick r&b. The other four genres get no genre points.
-- A real reggaeton song I like ranked only 10th.
+- The profile allows only one favorite genre, but I like several: r&b, afrobeats, reggaeton, and bachata.
+- I have to pick one, like r&b. The other genres get no genre points.
+- For an r&b + romantic profile, the top 5 included only one r&b song. The next r&b song came 10th.
 
 **No concept of artist**
 
 - The system doesn't know who made a song.
-- Two songs by my favorite artist landed far apart: one ranked 8th and the other ranked 36th. The second one is slower and darker than my targets.
+- In my Module 3 catalog, two songs by my favorite artist landed far apart: one ranked 8th and the other 36th. The second one is slower and darker than my targets.
 - I like everything by that artist, but the system can't learn that.
 
 **Labels can beat sound**
@@ -98,13 +98,14 @@ A song earns more points the **closer** it is to the user's target. Being higher
 
 **Mood can override genre**
 
-- For a "rock + sad" listener, the pop song "Heartbreak Disco" ranked 1st, above the rock song "Storm Runner."
+- For an "r&b + romantic" listener, romantic reggaeton, bachata, and afrobeats songs filled ranks 3–9, above the r&b song *Best Part* (10th).
 - An exact mood match (30 points) is worth far more than a genre match (10 points).
 - This could frustrate users who see genre as a must-have.
+- (In my Module 3 catalog, the same thing happened for a "rock + sad" listener: a sad pop song ranked 1st, above the only rock song.)
 
 **Unbalanced catalog**
 
-- Most genres have only one song. Listeners whose genre has more songs get more strong matches.
+- R&b and afrobeats have 10–11 songs each, but hip-hop has 2 and most contrast genres have 1. Listeners whose genre has more songs get more strong matches.
 
 ---
 
@@ -115,9 +116,9 @@ I tested the system in four ways.
 **1. A simple "chill lofi" profile**
 
 - Genre lofi, mood chill, low energy, acoustic.
-- The top 5 were calm lofi, ambient, and jazz songs. This matched what I expected.
+- The top 5 were three calm lofi songs, the calm r&b song *Pink Dolphin Sunset*, and an ambient song. This matched what I expected.
 
-**2. My own music taste**
+**2. My own music taste (Module 3 catalog)**
 
 - I built a profile from my real taste: r&b, romantic, upbeat, and danceable.
 - I added real songs by artists I like and checked where they ranked.
@@ -127,46 +128,47 @@ I tested the system in four ways.
 
 **3. Edge-case profiles**
 
-I tried three tricky profiles to see where the system breaks.
+I tried three tricky profiles to see where the system breaks. These outputs are from the current 47-song catalog.
 
 **High energy + sad mood** (`rock`, `sad`; energy `0.9`, tempo `150`, valence `0.1`, danceability `0.8`, acousticness `0.1`):
 
 ```text
-1. Heartbreak Disco | 84.16 / 100
-2. Storm Runner | 67.82 / 100
-3. Last Train to Vela | 60.91 / 100
-4. Redline Reverie | 58.70 / 100
-5. Velvet Static | 57.57 / 100
+1. Storm Runner | 67.82 / 100
+2. Bebo | 60.98 / 100
+3. Never Leave You (Uh Ooh) | 59.52 / 100
+4. Been Calling | 58.11 / 100
+5. Iron Furnace | 56.33 / 100
 ```
 
 **Lofi + angry mood + conflicting numbers** (`lofi`, `angry`; energy `0.9`, tempo `60`, valence `0.9`, danceability `0.1`, acousticness `1.0`):
 
 ```text
-1. Garage Riot | 71.78 / 100
-2. Iron Furnace | 69.37 / 100
-3. Gym Hero | 60.55 / 100
-4. Sidewalk Static | 60.22 / 100
-5. Storm Runner | 59.81 / 100
+1. Iron Furnace | 69.37 / 100
+2. Storm Runner | 59.81 / 100
+3. Calm Down | 48.27 / 100
+4. Sunrise City | 47.75 / 100
+5. Gasolina | 47.57 / 100
 ```
 
 **Unknown labels + impossible numbers** (`unknown`, `unknown`; energy `1.5`, tempo `-100`, valence `-1.0`, danceability `2.0`, acousticness `2.0`):
 
 ```text
 1. Iron Furnace | 17.09 / 100
-2. Redline Reverie | 17.09 / 100
-3. Velvet Static | 16.73 / 100
-4. Garage Riot | 16.00 / 100
-5. Canopy Run | 16.00 / 100
+2. Storm Runner | 14.91 / 100
+3. Bendecido | 12.73 / 100
+4. Sunrise City | 11.64 / 100
+5. Gasolina | 10.91 / 100
 ```
 
 What I learned from these:
 
-- **Mood wins.** In the angry profile, the exact "angry" mood pushed punk and metal above lofi, even though lofi was the chosen genre.
-- **Gym Hero was a surprise.** It is pop, and it fits that profile's numbers poorly. It still reached 3rd, because its "intense" mood is grouped with "angry" and its energy is high.
+- **There is no sad rock song, so mood groups fill the gap.** Storm Runner is the only rock song, so it ranks 1st on genre and energy. Ranks 2–4 are a bachata, an r&b and an afrobeats song whose moods (melancholic, nostalgic, yearning) share the "Longing" group with "sad."
+- **Mood wins over genre.** In the angry profile, the exact "angry" mood put metal 1st, even though lofi was the chosen genre. None of the 3 lofi songs made the top 5.
+- **Numbers alone can carry a song.** *Calm Down* matches neither the genre nor the mood of the angry profile. It still reached 3rd because its high energy and valence fit the targets.
 - **Bad inputs give low scores, not errors.** With impossible targets, almost every feature earned 0. Only energy still mattered, so the loudest songs won with very low scores.
-- **Ties are not handled.** Iron Furnace and Redline Reverie tied at 17.09. Their order just came from their order in the CSV.
+- **Ties are not handled.** At the bottom of the impossible-numbers run, *Moonlit Nocturne* and *Paper Boats* both scored 0.00. Their order just came from their order in the CSV.
 
-**4. Weight-shift experiment**
+**4. Weight-shift experiment (Module 3 catalog)**
 
 - I halved genre (20 → 10) and doubled energy (20 → 40).
 - The max score became 110, so I rescaled scores back to 100. I checked that a perfect song scores 100 and the worst scores 0.
