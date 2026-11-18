@@ -30,7 +30,9 @@ This project (VibeMatch 2.0) extends my Module 3 Music Recommender Simulation (V
 - A new 47-song catalog built around hip-hop, R&B, reggaeton, afrobeats and bachata
 - Guardrails (`src/guardrails.py`): a profile validator and a self-check on the picks, with 14 tests
 - A song catalog class with search and lookup (`src/catalog.py`), with 9 tests
-- Planned: a multi-step AI agent, a Gemini client, trace logging, and an evaluation script
+- A toolbox (`src/tools.py`) that lets the AI use only 4 approved tools, with argument checks and clear errors, with 18 tests
+- A Gemini client and an offline mock client (`src/llm_client.py`). Failures give a clear reason instead of crashing, and the API key is never printed. 8 tests, none call the real API
+- Planned: a multi-step AI agent, trace logging, and an evaluation script
 
 For the dated, step-by-step history, see [CHANGELOG.md](CHANGELOG.md).
 

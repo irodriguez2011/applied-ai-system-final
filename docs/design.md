@@ -26,10 +26,10 @@ The project requires the AI feature to be part of the main application and to ch
 | 4 | `Recommender` | `src/recommender.py` | Rank candidates, return the top *k* | Existing `recommend_songs` |
 | 5 | `ProfileValidator` | `src/guardrails.py` | Check the profile: values in 0–1, sensible BPM, known genres and moods | **Built** (Nov 18) |
 | 6 | `PickChecker` | `src/guardrails.py` | Self-check picks: songs exist, enough variety, confidence level | **Built** (Nov 18) |
-| 7 | `LLMClient` → `GeminiClient`, `MockClient` | `src/llm_client.py` | Talk to the AI, or a fake AI for tests | New |
-| 8 | `Toolbox` | `src/tools.py` | List the tools the agent may call and run them | New |
+| 7 | `LLMClient` → `GeminiClient`, `MockClient` | `src/llm_client.py` | Talk to the AI, or a fake AI for tests; failures raise `LLMError` with a reason | **Built** (Nov 18) |
+| 8 | `Toolbox` | `src/tools.py` | List the tools the agent may call and run them; refuse anything else | **Built** (Nov 18) |
 | 9 | `RecommenderAgent` | `src/agent.py` | Run the loop: plan → ask → search → rank → check → revise | New (AI feature) |
-| 10 | `UserIO` → `ConsoleIO`, `ScriptedIO` | `src/user_io.py` | Ask the human questions, live or scripted for tests | New (human-in-the-loop) |
+| 10 | `UserIO` → `ConsoleIO`, `ScriptedIO` | `src/user_io.py` | Ask the human questions, live or scripted for tests | **Built** (Nov 18, human-in-the-loop) |
 | 11 | `TraceLogger` | `src/trace.py` | Record every step to a log file | New (logging) |
 | 12 | Evaluator | `eval/run_eval.py` | Run fixed requests, print a pass/fail summary | New (testing) |
 | 13 | CLI | `src/main.py` | Build the objects and start a run | Existing, to update |
@@ -64,9 +64,9 @@ GRASP decides which class owns each job; SOLID keeps those classes easy to chang
 | Principle | Meaning | Where it is applied | Status |
 |---|---|---|---|
 | Single Responsibility | Each class has one reason to change | `ProfileValidator` and `PickChecker` each do one job. Step 2 split `recommender.py`: data shapes and mood clusters in `models.py`, loading and search in `catalog.py`, and only scoring and ranking left in `recommender.py` | **Built** |
-| Open/Closed | Add features without editing working code | New agent tools are registered in `Toolbox` without changing the agent; weights and mood clusters are named constants | Planned |
-| Liskov Substitution | A subclass can replace its parent safely | `MockClient` and `GeminiClient` both return text (empty text on failure), so the agent behaves the same with either | Planned |
-| Interface Segregation | Small, focused interfaces | `LLMClient` has one method (`complete`); `UserIO` has one (`ask`) | Planned |
+| Open/Closed | Add features without editing working code | New agent tools are added to `Toolbox` (one method + one entry in `TOOL_SPECS`) without changing the agent; weights and mood clusters are named constants | Partly built |
+| Liskov Substitution | A subclass can replace its parent safely | `MockClient` and `GeminiClient` both return text, and both raise `LLMError` on failure, so the agent behaves the same with either | **Built** |
+| Interface Segregation | Small, focused interfaces | `UserIO` has one method (`ask`) and `LLMClient` has one (`complete`) | **Built** |
 | Dependency Inversion | Depend on abstractions; pass dependencies in | `ProfileValidator` receives the genre list and `PickChecker` receives the songs. The agent will receive its LLM client, catalog and user I/O, so tests can pass a mock | Partly built |
 
 ## 4. Data flow
@@ -102,15 +102,40 @@ flowchart TD
 | `ProfileValidator` | Guardrail | The AI built a valid profile |
 | `PickChecker` | Self-check | Picks are real songs, varied, and confident enough |
 | Trace log | Human review | Every decision can be read afterward |
-| pytest + `MockClient` | Testing | Tools and guardrails work, with no API calls |
+| pytest + `MockClient` | Testing | Tools, guardrails and the LLM client's error handling work, with no API calls |
 | Evaluator | Testing | The full agent on fixed requests, with a pass/fail summary |
 
 ## 6. Limits on the agent
 
 - About 8 steps and 3 questions per run.
 - Every recommended song must exist in `songs.csv`.
-- If the LLM is unavailable (no key, network error, rate limit), the app runs the rule-based recommender and says so.
+- If the LLM is unavailable (no key, network error, rate limit, empty reply), the client raises `LLMError` with the reason; the app logs it, runs the rule-based recommender, and says so.
+- The API key never appears in output or logs: `GeminiClient` replaces it with `[hidden]` in any error message.
 
 ## 7. Evidence that the feature changes behavior
 
 The README will show the same request run with `--baseline` and with the agent, side by side. The outputs should differ because the agent builds the profile from the conversation and can re-rank after its self-check.
+
+## 8. How the design meets spec parts 4 and 5
+
+### Part 4: Reliability and evaluation
+
+The spec asks for at least one method. This design uses all four:
+
+| Method | Where | Evidence (text, not screenshots) |
+|---|---|---|
+| Automated tests | `tests/` (pytest, `MockClient`, `ScriptedIO`, no API calls) | Pass count in README |
+| Confidence scoring | `PickChecker` rates each result high / medium / low from the top score | Shown in every run's output; average reported by the evaluator |
+| Logging and error handling | Every tool returns `ok` + `error`; `TraceLogger` writes each step, failure and reason to `logs/` | A sample trace excerpt in README |
+| Human evaluation | I review the agent's picks for fixed requests | Markdown table in `model_card.md`: Test input · Evaluation criteria · Result |
+
+`eval/run_eval.py` prints a summary line in the spec's format, for example: "5 of 6 cases passed; the agent struggled when the request named no genre."
+
+### Part 5: Reflection and ethics (in `model_card.md`)
+
+| Section header | Source material |
+|---|---|
+| Limitations and biases | Estimated song features, small catalog, the mood-over-genre weighting, the LLM misreading slang |
+| Misuse and prevention | Prompt injection through the request, invented songs, cost abuse; prevented by the toolbox allow-list, `PickChecker`, and step/question limits |
+| What surprised me in reliability testing | Findings from the evaluator and the human evaluation table |
+| AI collaboration | The AI collaboration log in my design doc: at least one suggestion accepted and one changed or rejected, with reasons |
