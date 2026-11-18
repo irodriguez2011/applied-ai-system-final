@@ -19,10 +19,11 @@ Run `python -m src.llm_client` to check the Gemini connection. It prints only
 import os
 from typing import Iterable, List, Optional, Tuple
 
-DEFAULT_MODEL = "gemini-flash-lite-latest"
+DEFAULT_MODEL = "gemini-3.5-flash-lite"  # pinned: a "latest" alias can change behavior without warning
 DEFAULT_TEMPERATURE = 0.2  # low: we want steady, repeatable tool choices
 DEFAULT_TIMEOUT_SECONDS = 30
 KEY_NAME = "GEMINI_API_KEY"
+RETRY_ATTEMPTS = 3  # retry busy (503) or rate-limited (429) calls before giving up
 
 
 class LLMError(Exception):
@@ -75,7 +76,12 @@ class GeminiClient(LLMClient):
         self._key = api_key  # kept only so error messages can be scrubbed of it
         self.client = genai.Client(
             api_key=api_key,
-            http_options=types.HttpOptions(timeout=timeout_seconds * 1000),  # milliseconds
+            http_options=types.HttpOptions(
+                timeout=timeout_seconds * 1000,  # milliseconds
+                retry_options=types.HttpRetryOptions(
+                    attempts=RETRY_ATTEMPTS, initial_delay=1.0, http_status_codes=[429, 500, 503]
+                ),
+            ),
         )
         self.model_name = model_name
         self.temperature = float(temperature)
