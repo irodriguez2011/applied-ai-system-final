@@ -4,6 +4,22 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 
 ## [Unreleased]: VibeMatch 2.0 (Project 4)
 
+### 2026-11-18: Final docs
+- Redrew `diagrams/architecture.mmd` to match the agent as built, embedded it in the README, and added a rendered image, `diagrams/architecture.png`.
+- Rewrote `README.md`: summary, how the agent works, scoring, setup with `.env`, run commands, 3 real sample runs, baseline comparison, a guardrail input → behavior → result table, the evaluation, and limitations. Removed starter text and claims that weren't true (an outdated expected-results table, a tie-break rule the code never had, and `Recommender.recommend()` using the scoring code).
+- `model_card.md` now covers 2.0 and adds sections 10–13: limitations and biases, possible misuse and prevention, surprises during reliability testing, and AI collaboration.
+- Added `diagrams/data_flow.mmd`, a simplified data-flow diagram (also in the README and `docs/design.md`), fixed to match the real code: Gemini chooses the songs, then the code checks them; the fallback also runs after 8 steps.
+- README now covers everything the project instructions list: a summary of the original Module 3 project, an explanation of both diagrams, design decisions, a testing summary and a reflection.
+- Added `assets/evidence/`: real outputs of agent runs, the baseline, a trace log, the test run and the evaluation, with a README saying which command made each.
+
+### 2026-11-18: Evaluation
+- Added `eval/run_eval.py`: runs the agent with real Gemini on 6 fixed requests and scripted answers, applies a fit rule to each, compares with the Module 3 baseline, and prints a pass/fail table and summary line (also saved to `eval/latest_results.md`). Waits 20 seconds between cases to stay under the free tier's 15 requests a minute.
+- Results over three runs: 5/6 (rate limit), 5/6 (agent searched too much and ran out of steps), then 6/6 after a prompt fix. The baseline fit 1 of 6 requests.
+- `prompts/agent_system.md`: tells the agent to rank the whole catalog instead of searching repeatedly. Steps per case dropped from up to 8 to 3–5.
+- `load_dotenv(override=True)`: the project's `.env` now wins over a blank `GEMINI_API_KEY` already set in the terminal, which had made a real run fall back.
+- Added the evaluation results, run history and a human evaluation table to `model_card.md`.
+- Added `tests/test_eval.py` (4 tests). All 70 tests pass.
+
 ### 2026-11-18: Agent is the default in main.py
 - `python -m src.main` now asks what you're in the mood for and runs the agent. `--request "..."` skips that first question.
 - `python -m src.main --baseline` runs the original Module 3 recommender with its fixed lofi profile, for side-by-side comparison.
@@ -61,9 +77,6 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 ### 2026-11-17: New catalog
 - Rebuilt `data/songs.csv` with 47 songs: 37 real songs (hip-hop, R&B, reggaeton, afrobeats, bachata) and 10 made-up contrast songs.
 - Updated the README and model card numbers to match the new catalog.
-
-### Planned
-- `eval/run_eval.py`
 
 ## [1.0]: VibeMatch 1.0 (Module 3), 2026-11-08
 - Content-based recommender: mood (with mood clusters), genre and numeric-closeness scoring, rescaled to 0–100.

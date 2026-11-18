@@ -1,0 +1,69 @@
+
+What are you in the mood for? (for example: chill r&b to study to)
+> recommend me some music
+
+Thinking...
+
+What kind of genre or mood are you in the mood for today?
+> afrobeats, something happy
+
+Here are 5 happy and vibrant tracks, featuring some fantastic upbeat afrobeats and pop to brighten your day!
+
+Top 5 recommendations
+============================================================
+1. Sunrise City - Neon Echo (pop, happy)
+   Final score: 89.14 / 100
+   Reasons:
+   - mood match: happy (+30 points)
+   - energy closeness: 39.20/40 points
+   - valence closeness: 9.60/10 points
+   - danceability closeness: 7.52/8 points
+   - acousticness closeness: 6.86/7 points
+   - tempo closeness: 4.88/5 points
+------------------------------------------------------------
+2. Anybody - Burna Boy (afrobeats, celebratory)
+   Final score: 83.96 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - genre match: afrobeats (+10 points)
+   - energy closeness: 38.00/40 points
+   - valence closeness: 10.00/10 points
+   - danceability closeness: 8.00/8 points
+   - acousticness closeness: 6.65/7 points
+   - tempo closeness: 4.71/5 points
+------------------------------------------------------------
+3. Body Go - MOLIY & Tyla (afrobeats, euphoric)
+   Final score: 81.39 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - genre match: afrobeats (+10 points)
+   - energy closeness: 36.00/40 points
+   - valence closeness: 9.00/10 points
+   - danceability closeness: 8.00/8 points
+   - acousticness closeness: 6.65/7 points
+   - tempo closeness: 4.88/5 points
+------------------------------------------------------------
+4. Body & Soul - Joeboy (afrobeats, playful)
+   Final score: 80.08 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - genre match: afrobeats (+10 points)
+   - energy closeness: 34.00/40 points
+   - valence closeness: 9.50/10 points
+   - danceability closeness: 8.00/8 points
+   - acousticness closeness: 7.00/7 points
+   - tempo closeness: 4.58/5 points
+------------------------------------------------------------
+5. On the Low - Burna Boy (afrobeats, carefree)
+   Final score: 78.22 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - genre match: afrobeats (+10 points)
+   - energy closeness: 32.00/40 points
+   - valence closeness: 9.50/10 points
+   - danceability closeness: 8.00/8 points
+   - acousticness closeness: 7.00/7 points
+   - tempo closeness: 4.54/5 points
+------------------------------------------------------------
+Confidence: high  |  Agent steps: 4
+Step-by-step log: logs/run-20261118-140222-213686.jsonl

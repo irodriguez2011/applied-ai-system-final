@@ -1,0 +1,58 @@
+Loaded songs: 47
+Mode: baseline (Module 3 rule-based recommender, fixed lofi profile)
+
+Top 5 recommendations
+============================================================
+1. Midnight Coding - LoRoom (lofi, chill)
+   Final score: 98.50 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - genre match: lofi (+10 points)
+   - energy closeness: 39.20/40 points
+   - valence closeness: 9.80/10 points
+   - danceability closeness: 7.84/8 points
+   - acousticness closeness: 6.51/7 points
+   - tempo closeness: 5.00/5 points
+------------------------------------------------------------
+2. Library Rain - Paper Lanterns (lofi, chill)
+   Final score: 97.12 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - genre match: lofi (+10 points)
+   - energy closeness: 38.00/40 points
+   - valence closeness: 9.80/10 points
+   - danceability closeness: 7.84/8 points
+   - acousticness closeness: 6.44/7 points
+   - tempo closeness: 4.75/5 points
+------------------------------------------------------------
+3. Focus Flow - LoRoom (lofi, focused)
+   Final score: 86.20 / 100
+   Reasons:
+   - mood cluster match: Calm (+15 points)
+   - genre match: lofi (+10 points)
+   - energy closeness: 40.00/40 points
+   - valence closeness: 9.90/10 points
+   - danceability closeness: 8.00/8 points
+   - acousticness closeness: 7.00/7 points
+   - tempo closeness: 4.92/5 points
+------------------------------------------------------------
+4. Pink Dolphin Sunset - Tory Lanez (r&b, chill)
+   Final score: 85.57 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - energy closeness: 40.00/40 points
+   - valence closeness: 9.20/10 points
+   - danceability closeness: 7.20/8 points
+   - acousticness closeness: 3.64/7 points
+   - tempo closeness: 4.08/5 points
+------------------------------------------------------------
+5. Spacewalk Thoughts - Orbit Bloom (ambient, chill)
+   Final score: 82.95 / 100
+   Reasons:
+   - mood match: chill (+30 points)
+   - energy closeness: 35.20/40 points
+   - valence closeness: 9.30/10 points
+   - danceability closeness: 6.48/8 points
+   - acousticness closeness: 6.02/7 points
+   - tempo closeness: 4.25/5 points
+------------------------------------------------------------

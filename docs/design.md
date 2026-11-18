@@ -31,7 +31,7 @@ The project requires the AI feature to be part of the main application and to ch
 | 9 | `RecommenderAgent` | `src/agent.py` | Run the loop: plan → ask → search → rank → check → revise | **Built** (Nov 18, AI feature) |
 | 10 | `UserIO` → `ConsoleIO`, `ScriptedIO` | `src/user_io.py` | Ask the human questions, live or scripted for tests | **Built** (Nov 18, human-in-the-loop) |
 | 11 | `TraceLogger` | `src/trace.py` | Record every step to a log file | **Built** (Nov 18, logging) |
-| 12 | Evaluator | `eval/run_eval.py` | Run fixed requests, print a pass/fail summary | New (testing) |
+| 12 | Evaluator | `eval/run_eval.py` | Run 6 fixed requests with real Gemini and scripted answers, print a pass/fail table and summary line, compare with the baseline | **Built** (Nov 18, testing) |
 | 13 | CLI | `src/main.py` | Build the objects and start a run; agent by default, `--baseline` for Module 3 | **Built** (Nov 18) |
 
 ### Agent tools
@@ -71,13 +71,16 @@ GRASP decides which class owns each job; SOLID keeps those classes easy to chang
 
 ## 4. Data flow
 
-Main path, top to bottom: request → agent → toolbox → validator → rank → self-check → output. Dotted lines are side paths: going back to the agent, the fallback, and testing. Every tool result returns to the agent, which plans the next step.
+A simplified view of one run (also saved as [diagrams/data_flow.mmd](../diagrams/data_flow.mmd)). The full architecture, with every file, the baseline and the tests, is in [diagrams/architecture.mmd](../diagrams/architecture.mmd) (also shown in the README).
+
+Main path, top to bottom: request → agent → toolbox → validator → rank → the agent picks songs → the code checks those exact songs → output. Dotted lines go back to the agent or to the fallback. Every tool result returns to the agent, which plans the next step.
 
 ```mermaid
 flowchart TD
     U(["User request<br/>'chill r&b for studying'"]) --> AG
-    subgraph AGENT["RecommenderAgent (Controller)"]
+    subgraph AGENT["RecommenderAgent (Controller), at most 8 steps"]
         AG["Plan next step<br/>LLM: Gemini or Mock"] -- "tool call" --> TB["Toolbox<br/>results go back to the agent"]
+        AG -. "bad JSON: error goes back" .-> AG
     end
     TB --> ASK["ask_user"]
     ASK <--> H(["Human answers"])
@@ -85,13 +88,14 @@ flowchart TD
     TB --> V{"ProfileValidator<br/>guardrail"}
     V -- valid --> RANK["rank_songs<br/>Recommender + Scorer"]
     V -. invalid .-> AG
-    RANK --> C{"check_picks<br/>PickChecker"}
-    C -. "fails: retry" .-> AG
+    RANK -. "ranked songs" .-> AG
+    AG -- "final answer: 5 song ids" --> C{"Code runs check_picks<br/>PickChecker"}
+    C -. "fails: revise" .-> AG
     C -- passes --> O(["Top 5 + reasons + confidence"])
-    AG -. "AI unavailable" .-> F["Fallback:<br/>rule-based recommender"]
+    AG -. "AI unavailable<br/>or 8 steps used" .-> F["Fallback:<br/>rule-based recommender"]
     F --> O
     AG --> LOG[("Trace log")]
-    EV["pytest + Evaluator<br/>MockClient, ScriptedIO"] -. tests .-> AGENT
+    EV["pytest: MockClient + ScriptedIO<br/>Evaluator: Gemini + ScriptedIO"] -. tests .-> AGENT
 ```
 
 ## 5. Where humans and testing check the AI

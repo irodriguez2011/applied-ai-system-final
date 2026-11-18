@@ -1,0 +1,60 @@
+
+Thinking...
+
+Here are 5 high-energy party anthems spanning pop, afrobeats, reggaeton, and more to get your crowd moving!
+
+Top 5 recommendations
+============================================================
+1. Sunrise City - Neon Echo (pop, happy)
+   Final score: 81.68 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - genre match: pop (+10 points)
+   - energy closeness: 36.80/40 points
+   - valence closeness: 9.90/10 points
+   - danceability closeness: 7.12/8 points
+   - acousticness closeness: 6.44/7 points
+   - tempo closeness: 4.58/5 points
+------------------------------------------------------------
+2. Body Go - MOLIY & Tyla (afrobeats, euphoric)
+   Final score: 80.98 / 100
+   Reasons:
+   - mood match: euphoric (+30 points)
+   - energy closeness: 32.00/40 points
+   - valence closeness: 8.50/10 points
+   - danceability closeness: 7.60/8 points
+   - acousticness closeness: 6.65/7 points
+   - tempo closeness: 4.33/5 points
+------------------------------------------------------------
+3. Bendecido - El Alfa & FARIANA (reggaeton, celebratory)
+   Final score: 73.42 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - energy closeness: 38.00/40 points
+   - valence closeness: 8.50/10 points
+   - danceability closeness: 7.60/8 points
+   - acousticness closeness: 7.00/7 points
+   - tempo closeness: 4.67/5 points
+------------------------------------------------------------
+4. Anybody - Burna Boy (afrobeats, celebratory)
+   Final score: 69.92 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - energy closeness: 34.00/40 points
+   - valence closeness: 9.50/10 points
+   - danceability closeness: 7.60/8 points
+   - acousticness closeness: 6.65/7 points
+   - tempo closeness: 4.17/5 points
+------------------------------------------------------------
+5. Believe What I Say - Kanye West (hip-hop, uplifting)
+   Final score: 66.59 / 100
+   Reasons:
+   - mood cluster match: Happy (+15 points)
+   - energy closeness: 32.00/40 points
+   - valence closeness: 8.50/10 points
+   - danceability closeness: 7.20/8 points
+   - acousticness closeness: 6.30/7 points
+   - tempo closeness: 4.25/5 points
+------------------------------------------------------------
+Confidence: high  |  Agent steps: 3
+Step-by-step log: logs/run-20261118-140203-018220.jsonl
