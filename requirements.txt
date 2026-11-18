@@ -1,3 +1,6 @@
-pandas
-pytest
-streamlit
+# Runtime
+google-genai==3.5.0      # Gemini API client for the agent
+python-dotenv==1.2.4     # loads GEMINI_API_KEY from .env
+
+# Testing
+pytest==9.2.0

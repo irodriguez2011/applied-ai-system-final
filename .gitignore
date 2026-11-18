@@ -13,3 +13,10 @@ venv/
 
 # Pytest cache
 .pytest_cache/
+
+# Secrets (API keys) - never commit
+.env
+
+# Agent trace logs (keep the folder, ignore the files)
+logs/*
+!logs/.gitkeep
