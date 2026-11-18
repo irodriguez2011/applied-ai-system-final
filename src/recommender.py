@@ -1,6 +1,15 @@
-from typing import List, Dict, Tuple, Optional
-from dataclasses import dataclass
-import csv
+"""Scoring and ranking: how well each song fits a taste profile.
+
+This module only scores and ranks. Song data and lookups live in
+src/catalog.py; shared data shapes and mood clusters live in src/models.py.
+load_songs, Song, UserProfile, MOOD_CLUSTERS and KNOWN_MOODS are re-exported
+here so older imports (main.py, the Module 3 tests) keep working.
+"""
+
+from typing import Dict, List, Tuple
+
+from src.catalog import load_songs  # noqa: F401  (re-exported)
+from src.models import KNOWN_MOODS, MOOD_CLUSTERS, Song, UserProfile, mood_cluster  # noqa: F401
 
 # --- Experiment: weight shift -------------------------------------------
 # Original weights: genre 20, energy 20 (max score 100).
@@ -28,38 +37,6 @@ MAX_RAW_SCORE = (
 )
 
 
-@dataclass
-class Song:
-    """
-    Represents a song and its attributes.
-    Required by tests/test_recommender.py
-    """
-
-    id: int
-    title: str
-    artist: str
-    genre: str
-    mood: str
-    energy: float
-    tempo_bpm: float
-    valence: float
-    danceability: float
-    acousticness: float
-
-
-@dataclass
-class UserProfile:
-    """
-    Represents a user's taste preferences.
-    Required by tests/test_recommender.py
-    """
-
-    favorite_genre: str
-    favorite_mood: str
-    target_energy: float
-    likes_acoustic: bool
-
-
 class Recommender:
     """
     OOP implementation of the recommendation logic.
@@ -78,53 +55,8 @@ class Recommender:
         return "Explanation placeholder"
 
 
-def load_songs(csv_path: str) -> List[Dict]:
-    """Load song rows from a CSV file and convert numeric fields."""
-    numeric_fields = (
-        "energy",
-        "tempo_bpm",
-        "valence",
-        "danceability",
-        "acousticness",
-    )
-    songs = []
-    with open(csv_path, newline="", encoding="utf-8") as csv_file:
-        for song in csv.DictReader(csv_file):
-            song["id"] = int(song["id"])
-            for field in numeric_fields:
-                song[field] = float(song[field])
-            songs.append(song)
-    return songs
-
-
 def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     """Score one song against the user's preferences and explain the points."""
-    mood_clusters = {
-        "Calm": {"chill", "relaxed", "peaceful", "focused", "dreamy", "reflective"},
-        "Happy": {
-            "happy",
-            "uplifting",
-            "euphoric",
-            "celebratory",
-            "carefree",
-            "playful",
-            "whimsical",
-            "mischievous",
-        },
-        "Intense": {
-            "intense",
-            "angry",
-            "aggressive",
-            "anxious",
-            "rebellious",
-            "overwhelmed",
-        },
-        "Energetic": {"energetic", "confident", "determined", "adventurous"},
-        "Romantic": {"romantic", "passionate"},
-        "Longing": {"sad", "melancholic", "yearning", "nostalgic"},
-        "Moody": {"moody", "mysterious", "uncertain"},
-    }
-
     score = 0.0
     reasons = []
     favorite_mood = str(user_prefs["favorite_mood"]).strip().casefold()
@@ -134,14 +66,8 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         score += MOOD_POINTS
         reasons.append(f"mood match: {song['mood']} (+{MOOD_POINTS} points)")
     else:
-        favorite_cluster = next(
-            (name for name, moods in mood_clusters.items() if favorite_mood in moods),
-            None,
-        )
-        song_cluster = next(
-            (name for name, moods in mood_clusters.items() if song_mood in moods),
-            None,
-        )
+        favorite_cluster = mood_cluster(favorite_mood)
+        song_cluster = mood_cluster(song_mood)
         if favorite_cluster is not None and favorite_cluster == song_cluster:
             score += MOOD_CLUSTER_POINTS
             reasons.append(
