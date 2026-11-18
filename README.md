@@ -17,7 +17,7 @@ Replace this paragraph with your own summary of what your version does.
 
 ## Built on Module 3
 
-This project (VibeMatch 2.0) extends my Module 3 Music Recommender Simulation (VibeMatch 1.0).
+This project (VibeMatch 2.0) extends my Module 3 Music Recommender Simulation (VibeMatch 1.0) from Codepath
 
 **What came from Module 3**
 
