@@ -27,7 +27,7 @@ This project (VibeMatch 2.0) extends my Module 3 Music Recommender Simulation (V
 
 **What's new in Project 4**
 
-- A new 47-song catalog built around hip-hop, R&B, reggaeton, afrobeats and bachata, with only clean (non-explicit) tracks
+- A new 47-song catalog built around hip-hop, R&B, reggaeton, afrobeats and bachata
 - Guardrails (`src/guardrails.py`): a profile validator and a self-check on the picks, with 14 tests
 - A song catalog class with search and lookup (`src/catalog.py`), with 9 tests
 - Planned: a multi-step AI agent, a Gemini client, trace logging, and an evaluation script
@@ -210,7 +210,7 @@ The lowest-scoring songs are Storm Runner (rock / intense, 36.6) and Iron Furnac
 - **Labels can outweigh sound.** Mood and genre together are worth up to 40 of the 110 raw points (about 36% of the final score). A song with matching labels but a poor numeric fit can beat a song that sounds right but has different labels.
 - **Mood is favored over genre.** Mood is weighted 30 and genre 10, so a song in the user's favorite genre with an unrelated mood may be ranked below songs from genres the user never listens to.
 - **Exact genre matching ignores close neighbors.** A lofi fan gets no genre credit for ambient or jazz, so great songs in similar genres can be buried.
-- **The catalog is unbalanced.** R&b has 11 songs and afrobeats 10, but hip-hop has only 2 because clean (non-explicit) hip-hop is rare, and most contrast genres have 1. Users whose favorite genre has more songs get more strong matches to choose from.
+- **The catalog is unbalanced.** R&b has 11 songs and afrobeats 10, but hip-hop has only 2, and most contrast genres have 1. Users whose favorite genre has more songs get more strong matches to choose from.
 - **The example profile leans toward lofi.** Its numeric targets are the average of the lofi songs, so it naturally favors lofi over other calm music.
 - **The mood clusters reflect personal judgment.** Grouping moods like "nostalgic" with "sad" is a subjective choice. Another person might group them differently and get different recommendations.
 

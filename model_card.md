@@ -24,15 +24,14 @@ It does not predict a rating or a play. It ranks songs by how closely they match
 - **Variety:** 13 genres and 24 moods.
 - **Features per song:** title, artist, genre, mood, energy, tempo (BPM), valence, danceability, and acousticness.
 - **Where the songs came from:**
-  - Songs 1–37 are real songs from my own Apple Music library: 11 r&b, 10 afrobeats, 7 reggaeton, 7 bachata, and 2 hip-hop. I kept only songs without the explicit (E) badge, because this project is on my resume. Their feature values and mood labels are my estimates, not official data.
+  - Songs 1–37 are real songs from my own Apple Music library: 11 r&b, 10 afrobeats, 7 reggaeton, 7 bachata, and 2 hip-hop. Their feature values and mood labels are my estimates, not official data.
   - Songs 38–47 are made-up "contrast" songs (lofi, jazz, ambient, classical, rock, metal, pop, folk) kept from the starter and my Module 3 catalog. They let me check that very different profiles get very different results.
   - Earlier versions had 53 mostly made-up songs. I replaced them in Project 4 so I could judge results by ear.
 
 **Limits of the data:**
 
-- Genres are unbalanced. R&b has 11 songs, but hip-hop has only 2 because almost all current rap is explicit, and most contrast genres have 1.
+- Genres are unbalanced. R&b has 11 songs, but hip-hop has only 2 and most contrast genres have 1.
 - The real songs' numbers and moods are my guesses about how they sound.
-- Leaving out explicit songs means the catalog does not fully match my real taste.
 - There is no listening history, like plays, skips, or likes.
 - There is no information about lyrics, language, or release year.
 

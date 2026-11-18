@@ -23,7 +23,6 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 
 ### 2026-11-17: New catalog
 - Rebuilt `data/songs.csv` with 47 songs: 37 real songs (hip-hop, R&B, reggaeton, afrobeats, bachata) and 10 made-up contrast songs.
-- Removed explicit tracks and dancehall so the project is resume-safe.
 - Updated the README and model card numbers to match the new catalog.
 
 ### Planned
