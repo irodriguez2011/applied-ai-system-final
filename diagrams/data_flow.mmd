@@ -1,0 +1,22 @@
+%% Data flow: VibeMatch 2.0, one run from request to output (simplified).
+%% The full system diagram is diagrams/architecture.mmd.
+flowchart TD
+    U(["User request<br/>'chill r&b for studying'"]) --> AG
+    subgraph AGENT["RecommenderAgent (Controller), at most 8 steps"]
+        AG["Plan next step<br/>LLM: Gemini or Mock"] -- "tool call" --> TB["Toolbox<br/>results go back to the agent"]
+        AG -. "bad JSON: error goes back" .-> AG
+    end
+    TB --> ASK["ask_user"]
+    ASK <--> H(["Human answers"])
+    TB --> SEARCH["search_songs<br/>SongCatalog"]
+    TB --> V{"ProfileValidator<br/>guardrail"}
+    V -- valid --> RANK["rank_songs<br/>Recommender + Scorer"]
+    V -. invalid .-> AG
+    RANK -. "ranked songs" .-> AG
+    AG -- "final answer: 5 song ids" --> C{"Code runs check_picks<br/>PickChecker"}
+    C -. "fails: revise" .-> AG
+    C -- passes --> O(["Top 5 + reasons + confidence"])
+    AG -. "AI unavailable<br/>or 8 steps used" .-> F["Fallback:<br/>rule-based recommender"]
+    F --> O
+    AG --> LOG[("Trace log")]
+    EV["pytest: MockClient + ScriptedIO<br/>Evaluator: Gemini + ScriptedIO"] -. tests .-> AGENT

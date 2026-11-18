@@ -1,23 +1,42 @@
-%% System architecture: VibeMatch music recommender
-%% Base version (Module 3). This diagram shows the system as it runs today.
-%% It will be updated when the new AI feature is added.
+%% System architecture: VibeMatch 2.0 (Project 4)
+%% Matches the code on 2026-11-18. The AI decides what to do; Python scores and checks.
 flowchart TD
-    U["User taste profile<br/>(user_prefs dict in src/main.py)"] --> R
-    CSV[("data/songs.csv<br/>47 songs")] --> L["load_songs() in catalog.py<br/>parse CSV, convert numbers"]
-    L --> R["recommend_songs(user_prefs, songs, k)"]
+    U(["Listener<br/>types a request"]) --> MAIN["main.py<br/>agent by default"]
+    MAIN -- "--baseline" --> BASE["Baseline: Module 3<br/>fixed lofi profile"]
 
-    subgraph Scoring["score_song() - runs once per song"]
-        M["Mood match<br/>exact 30 / same cluster 15"]
-        G["Genre match<br/>exact 10"]
-        N["Numeric closeness<br/>energy 40, valence 10,<br/>danceability 8, acousticness 7, tempo 5"]
-        S["Rescale raw score (max 110) to 0-100<br/>and collect reasons"]
-        M --> S
-        G --> S
-        N --> S
+    MAIN --> AGENT
+    subgraph AGENT["RecommenderAgent (agent.py) - at most 8 steps"]
+        PLAN["Gemini picks ONE action as JSON<br/>(prompts/agent_system.md + history so far)"]
+        PARSE{"Valid JSON?<br/>tool call or final answer"}
+        PLAN --> PARSE
+        PARSE -- "no: error goes back" --> PLAN
     end
 
-    R --> Scoring
-    Scoring --> K["Sort by score, high to low<br/>keep top k"]
-    K --> O["CLI output<br/>top 5 songs with scores and reasons"]
+    PARSE -- "tool call" --> TB
+    subgraph TB["Toolbox (tools.py) - only 4 tools, never crashes"]
+        ASK["ask_user<br/>max 3 questions"]
+        SEARCH["search_songs<br/>genre / mood / energy"]
+        RANK["rank_songs"]
+        CHECK["check_picks"]
+    end
+    ASK <--> IO["UserIO<br/>ConsoleIO (person) / ScriptedIO (tests, eval)"]
+    SEARCH --> CAT[("SongCatalog<br/>data/songs.csv, 47 songs")]
+    RANK --> PV["ProfileValidator<br/>7 keys, 0-1 ranges, 40-220 BPM"]
+    PV -- "valid" --> SCORE["score_song + recommend_songs<br/>Module 3 scoring, out of 100"]
+    PV -- "invalid: error" --> PLAN
+    CHECK --> PC["PickChecker<br/>real songs, no repeats,<br/>max 2 per artist, confidence"]
+    TB -- "ToolResult: ok, data, error" --> PLAN
 
-    O --> H["Human review<br/>developer checks if results make sense"]
+    PARSE -- "final answer" --> SELF{"Code runs check_picks<br/>on these exact songs"}
+    SELF -- "fails: problems go back, revise" --> PLAN
+    SELF -- "passes" --> OUT(["Top 5 + reasons + confidence + log path"])
+
+    PLAN -. "Gemini down, rate limit,<br/>or 8 steps used" .-> FB["Fallback: Module 3 recommender<br/>reuses the agent's profile if it built one"]
+    FB --> OUT
+    BASE --> OUT2(["Top 5 + reasons"])
+
+    AGENT -. "every step" .-> LOG[("Trace log<br/>logs/run-*.jsonl")]
+    LLM["GeminiClient (llm_client.py)<br/>gemini-3.5-flash-lite, retries 429/503"] --- PLAN
+
+    TESTS["pytest: 70 tests<br/>MockClient + ScriptedIO, no API calls"] -. "checks" .-> AGENT
+    EVAL["eval/run_eval.py<br/>6 fixed requests with real Gemini,<br/>compared with the baseline"] -. "measures" .-> AGENT
