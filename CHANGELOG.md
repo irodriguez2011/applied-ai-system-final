@@ -4,9 +4,27 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 
 ## [Unreleased]: VibeMatch 2.0 (Project 4)
 
+### 2026-11-18: Agent is the default in main.py
+- `python -m src.main` now asks what you're in the mood for and runs the agent. `--request "..."` skips that first question.
+- `python -m src.main --baseline` runs the original Module 3 recommender with its fixed lofi profile, for side-by-side comparison.
+- Output now shows the agent's message, confidence, number of steps, and the path to the step-by-step log. A fallback run says so and gives the reason.
+- Added `UnavailableClient`: if Gemini can't be set up (for example, no key), the agent falls back instead of crashing.
+- Added `tests/test_main.py` (4 tests). All 66 tests pass.
+
+### 2026-11-18: Agent and trace log
+- Added `src/agent.py` with `RecommenderAgent`. Each step, Gemini picks one action (a tool call or a final answer) as JSON.
+  - A final answer is accepted only if `check_picks` passes on those exact ids; otherwise the problems go back to Gemini to revise.
+  - Bad JSON or a bad tool call uses a step but doesn't crash; the error goes back to Gemini.
+  - At most 8 steps. If Gemini fails or runs out of steps, the Module 3 recommender answers instead, using the agent's profile if it built one.
+- Added `prompts/agent_system.md`, the agent's instructions, with the tools, genres and moods filled in from code.
+- Added `src/trace.py`: every step is written as JSON Lines to `logs/`.
+- `GeminiClient` now retries busy (503) or rate-limited (429) calls up to 3 times, after a live run hit a 503.
+- Added `tests/test_agent.py` (11 tests). All 62 tests pass.
+- First live runs: "dance at a party" finished in 5 steps with high confidence; "recommend me some music" asked one question, then finished in 5 steps.
+
 ### 2026-11-18: LLM client
 - Added `src/llm_client.py`:
-  - `GeminiClient` calls `gemini-flash-lite-latest`, asks for a JSON reply, uses a low temperature (0.2) and a 30-second timeout.
+  - `GeminiClient` calls `gemini-3.5-flash-lite` (a pinned version, since the `latest` alias was not available and can change without warning), asks for a JSON reply, uses a low temperature (0.2) and a 30-second timeout.
   - `MockClient` replays prepared replies, so tests run offline and free.
   - Any failure (no key, network error, empty reply) raises `LLMError` with a reason. Module 5's BugHound returned an empty string instead, which hid why it failed.
   - Error messages never contain the API key.
@@ -45,9 +63,7 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 - Updated the README and model card numbers to match the new catalog.
 
 ### Planned
-- The multi-step agent
-- The agent becomes the default in `main.py`; `--baseline` runs the rule-based recommender
-- Trace logging and `eval/run_eval.py`
+- `eval/run_eval.py`
 
 ## [1.0]: VibeMatch 1.0 (Module 3), 2026-11-08
 - Content-based recommender: mood (with mood clusters), genre and numeric-closeness scoring, rescaled to 0–100.

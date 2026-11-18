@@ -28,11 +28,11 @@ The project requires the AI feature to be part of the main application and to ch
 | 6 | `PickChecker` | `src/guardrails.py` | Self-check picks: songs exist, enough variety, confidence level | **Built** (Nov 18) |
 | 7 | `LLMClient` → `GeminiClient`, `MockClient` | `src/llm_client.py` | Talk to the AI, or a fake AI for tests; failures raise `LLMError` with a reason | **Built** (Nov 18) |
 | 8 | `Toolbox` | `src/tools.py` | List the tools the agent may call and run them; refuse anything else | **Built** (Nov 18) |
-| 9 | `RecommenderAgent` | `src/agent.py` | Run the loop: plan → ask → search → rank → check → revise | New (AI feature) |
+| 9 | `RecommenderAgent` | `src/agent.py` | Run the loop: plan → ask → search → rank → check → revise | **Built** (Nov 18, AI feature) |
 | 10 | `UserIO` → `ConsoleIO`, `ScriptedIO` | `src/user_io.py` | Ask the human questions, live or scripted for tests | **Built** (Nov 18, human-in-the-loop) |
-| 11 | `TraceLogger` | `src/trace.py` | Record every step to a log file | New (logging) |
+| 11 | `TraceLogger` | `src/trace.py` | Record every step to a log file | **Built** (Nov 18, logging) |
 | 12 | Evaluator | `eval/run_eval.py` | Run fixed requests, print a pass/fail summary | New (testing) |
-| 13 | CLI | `src/main.py` | Build the objects and start a run | Existing, to update |
+| 13 | CLI | `src/main.py` | Build the objects and start a run; agent by default, `--baseline` for Module 3 | **Built** (Nov 18) |
 
 ### Agent tools
 
@@ -67,7 +67,7 @@ GRASP decides which class owns each job; SOLID keeps those classes easy to chang
 | Open/Closed | Add features without editing working code | New agent tools are added to `Toolbox` (one method + one entry in `TOOL_SPECS`) without changing the agent; weights and mood clusters are named constants | Partly built |
 | Liskov Substitution | A subclass can replace its parent safely | `MockClient` and `GeminiClient` both return text, and both raise `LLMError` on failure, so the agent behaves the same with either | **Built** |
 | Interface Segregation | Small, focused interfaces | `UserIO` has one method (`ask`) and `LLMClient` has one (`complete`) | **Built** |
-| Dependency Inversion | Depend on abstractions; pass dependencies in | `ProfileValidator` receives the genre list and `PickChecker` receives the songs. The agent will receive its LLM client, catalog and user I/O, so tests can pass a mock | Partly built |
+| Dependency Inversion | Depend on abstractions; pass dependencies in | `ProfileValidator` receives the genre list and `PickChecker` receives the songs. The agent receives its LLM client, toolbox and trace logger, so tests pass `MockClient` and `ScriptedIO` | **Built** |
 
 ## 4. Data flow
 

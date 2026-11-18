@@ -32,7 +32,9 @@ This project (VibeMatch 2.0) extends my Module 3 Music Recommender Simulation (V
 - A song catalog class with search and lookup (`src/catalog.py`), with 9 tests
 - A toolbox (`src/tools.py`) that lets the AI use only 4 approved tools, with argument checks and clear errors, with 18 tests
 - A Gemini client and an offline mock client (`src/llm_client.py`). Failures give a clear reason instead of crashing, and the API key is never printed. 8 tests, none call the real API
-- Planned: a multi-step AI agent, trace logging, and an evaluation script
+- A multi-step AI agent (`src/agent.py`) that asks follow-up questions, searches, ranks and self-checks its picks, revising when the check fails and falling back to the rule-based recommender if Gemini is down. Every step is logged to `logs/` (`src/trace.py`). 11 tests
+- The agent is now the default: `python -m src.main` starts a conversation, and `python -m src.main --baseline` runs the original Module 3 recommender for comparison. 4 tests
+- Planned: an evaluation script
 
 For the dated, step-by-step history, see [CHANGELOG.md](CHANGELOG.md).
 
@@ -131,10 +133,11 @@ flowchart TD
 
 ### Sample Recommendation Output
 
-Output from running `python -m src.main` with the current profile in `src/main.py`:
+Output from running `python -m src.main --baseline` (the Module 3 recommender with its fixed lofi profile):
 
 ```text
 Loaded songs: 47
+Mode: baseline (Module 3 rule-based recommender, fixed lofi profile)
 
 Top 5 recommendations
 ============================================================
@@ -246,10 +249,20 @@ The lowest-scoring songs are Storm Runner (rock / intense, 36.6) and Iron Furnac
 pip install -r requirements.txt
 ```
 
-3. Run the app:
+3. Run the app. The AI agent is the default and may ask you a question first:
 
 ```bash
 python -m src.main
+```
+
+   Skip the first question by giving your request up front, or run the original Module 3 recommender:
+
+```bash
+python -m src.main --request "chill r&b to study to"
+```
+
+```bash
+python -m src.main --baseline
 ```
 
 ### Running Tests
