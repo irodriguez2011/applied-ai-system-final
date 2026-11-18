@@ -1,0 +1,23 @@
+%% System architecture: VibeMatch music recommender
+%% Base version (Module 3). This diagram shows the system as it runs today.
+%% It will be updated when the new AI feature is added.
+flowchart TD
+    U["User taste profile<br/>(user_prefs dict in src/main.py)"] --> R
+    CSV[("data/songs.csv<br/>47 songs")] --> L["load_songs() in catalog.py<br/>parse CSV, convert numbers"]
+    L --> R["recommend_songs(user_prefs, songs, k)"]
+
+    subgraph Scoring["score_song() - runs once per song"]
+        M["Mood match<br/>exact 30 / same cluster 15"]
+        G["Genre match<br/>exact 10"]
+        N["Numeric closeness<br/>energy 40, valence 10,<br/>danceability 8, acousticness 7, tempo 5"]
+        S["Rescale raw score (max 110) to 0-100<br/>and collect reasons"]
+        M --> S
+        G --> S
+        N --> S
+    end
+
+    R --> Scoring
+    Scoring --> K["Sort by score, high to low<br/>keep top k"]
+    K --> O["CLI output<br/>top 5 songs with scores and reasons"]
+
+    O --> H["Human review<br/>developer checks if results make sense"]

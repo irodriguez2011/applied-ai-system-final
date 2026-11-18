@@ -15,6 +15,27 @@ Replace this paragraph with your own summary of what your version does.
 
 ---
 
+## Built on Module 3
+
+This project (VibeMatch 2.0) extends my Module 3 Music Recommender Simulation (VibeMatch 1.0).
+
+**What came from Module 3**
+
+- The content-based scoring logic (`score_song`, `recommend_songs`) and its weights
+- The command-line runner (`python -m src.main`)
+- The original tests in `tests/test_recommender.py`
+
+**What's new in Project 4**
+
+- A new 47-song catalog built around hip-hop, R&B, reggaeton, afrobeats and bachata, with only clean (non-explicit) tracks
+- Guardrails (`src/guardrails.py`): a profile validator and a self-check on the picks, with 14 tests
+- A song catalog class with search and lookup (`src/catalog.py`), with 9 tests
+- Planned: a multi-step AI agent, a Gemini client, trace logging, and an evaluation script
+
+For the dated, step-by-step history, see [CHANGELOG.md](CHANGELOG.md).
+
+---
+
 ## How The System Works
 
 Real-world music recommenders often combine song attributes with listening behavior, such as plays, skips, and saves, to predict what a listener may enjoy and rank those options. This project uses a simpler content-based approach: it compares each song's genre and mood with the user's preferences, and scores how close each numeric feature (energy, tempo, valence, danceability, acousticness) is to the user's target. A weighted score prioritizes the closest matches; unlike larger systems, this version does not learn from listening history or other users.
@@ -23,7 +44,7 @@ Each `Song` stores `id`, `title`, `artist`, `genre`, `mood`, `energy`, `tempo_bp
 
 ### Implementation Plan
 
-1. **Load the data.** `load_songs()` reads `data/songs.csv` with `csv.DictReader` and converts the numeric columns (`energy`, `tempo_bpm`, `valence`, `danceability`, `acousticness`) from text to numbers.
+1. **Load the data.** `load_songs()` (in `src/catalog.py`) reads `data/songs.csv` with `csv.DictReader` and converts the numeric columns (`energy`, `tempo_bpm`, `valence`, `danceability`, `acousticness`) from text to numbers.
 2. **Define the taste profile.** Store the user's preferences as a `user_prefs` dictionary (see below).
 3. **Score one song.** `score_song(user_prefs, song)` applies the Algorithm Recipe and returns `(score, reasons)`.
 4. **Score and rank every song.** `recommend_songs(user_prefs, songs, k)` loops over all songs, scores each one, sorts the results, and returns the top `k` as `(song, score, explanation)`.
