@@ -130,7 +130,9 @@ def load_gemini_client(**kwargs) -> GeminiClient:
     try:
         from dotenv import load_dotenv
 
-        load_dotenv()
+        # override=True: the project's .env wins over a blank or stale
+        # GEMINI_API_KEY already set in the terminal.
+        load_dotenv(override=True)
     except ImportError:
         pass  # fine: the key can still come from the real environment
     return GeminiClient(**kwargs)
