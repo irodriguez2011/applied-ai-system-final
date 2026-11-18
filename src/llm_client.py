@@ -54,6 +54,20 @@ class MockClient(LLMClient):
         return self._replies.pop(0)
 
 
+class UnavailableClient(LLMClient):
+    """Stands in when Gemini can't be set up (for example, no key).
+
+    Every call raises LLMError with the setup problem, so the agent takes its
+    normal fallback path and the trace log records why.
+    """
+
+    def __init__(self, reason: str):
+        self.reason = reason
+
+    def complete(self, system_prompt: str, user_prompt: str) -> str:
+        raise LLMError(self.reason)
+
+
 class GeminiClient(LLMClient):
     """Calls Gemini and asks for a JSON reply."""
 
