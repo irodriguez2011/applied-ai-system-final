@@ -404,7 +404,7 @@ described above are built and working. Next steps:
 3. **Feedback loop.** Let listeners like or skip each song, save that feedback,
    and use it to adjust their taste profile on the next request.
 
-   ---
+---
 
 ## Reflection
 
