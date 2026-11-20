@@ -390,6 +390,22 @@ More detail, with GRASP and SOLID, is in [docs/design.md](docs/design.md).
 
 ---
 
+## Status and roadmap
+
+**This project is a work in progress.** The agent, guardrails, tests and evaluation
+described above are built and working. Next steps:
+
+1. **Real song data.** Replace my hand-estimated catalog with a public dataset of
+   real audio features (energy, valence, danceability, tempo), so scores come from
+   measured data instead of my guesses, and the catalog grows past 47 songs.
+2. **Full-stack web app.** Serve the agent through a FastAPI backend and
+   build a React chat interface, with follow-up questions in the chat,
+   live agent steps, and song cards. Today the agent runs in the terminal.
+3. **Feedback loop.** Let listeners like or skip each song, save that feedback,
+   and use it to adjust their taste profile on the next request.
+
+   ---
+
 ## Reflection
 
 This project taught me that adding AI to a system is mostly about deciding what the AI should **not** do. Letting Gemini choose the next step made the recommender understand plain requests, but the parts I trust are the ones in code: the scoring, the checks and the fallback. It also showed me that you can't judge an AI system by reading it. I only found the rate limit and the over-searching by running the real agent and measuring it.
