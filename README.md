@@ -425,11 +425,9 @@ described above are built and working. Next steps:
 
 ---
 
-## Portfolio
+## What this project says about me as an AI engineer
 
-**Code:** [github.com/irodriguez2011/applied-ai-system-final](https://github.com/irodriguez2011/applied-ai-system-final)
-
-**What this project says about me as an AI engineer:** I build AI systems I can check. I let the AI do what it's good at, understanding plain requests and choosing the next step, and kept the scoring, checks and fallback in code I can test. I test with real data I understand, which is why I used songs from my own library instead of popular hits an AI suggested. And I don't stop at "the tests pass": I ran the real agent, measured it, and listened to the picks myself, which is how I found the rate limit, the over-searching and the weak "sad" picks that the automated tests missed.
+I build AI systems I can check. I let the AI do what it's good at, understanding plain requests and choosing the next step, and kept the scoring, checks and fallback in code I can test. I test with real data I understand, which is why I used songs from my own library instead of popular hits an AI suggested. And I don't stop at "the tests pass": I ran the real agent, measured it, and listened to the picks myself, which is how I found the rate limit, the over-searching and the weak "sad" picks that the automated tests missed.
 
 ---
 
