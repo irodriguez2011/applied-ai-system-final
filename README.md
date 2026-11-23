@@ -2,6 +2,8 @@
 
 VibeMatch recommends 5 songs from a 47-song catalog based on what you say you're in the mood for. You type a request like *something chill to study to*. An AI agent (Gemini) asks a follow-up question if it needs one, turns your words into a taste profile, ranks songs with my Module 3 scoring code, and checks its own picks before showing them. The AI decides what to do next; Python code does all the scoring and checking, so the AI can't invent songs or scores.
 
+**Video walkthrough:** coming soon. A Loom recording of the system running end to end will be linked here. Everything it shows is already documented below in text: [sample runs](#sample-runs), [guardrails](#reliability-and-guardrails) and the [evaluation](#evaluation).
+
 ---
 
 ## Built on Module 3
