@@ -20,3 +20,6 @@ venv/
 # Agent trace logs (keep the folder, ignore the files)
 logs/*
 !logs/.gitkeep
+
+# Personal files that are not part of the project
+Claude outputs/
