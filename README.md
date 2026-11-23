@@ -200,7 +200,10 @@ python -m src.main --request "chill r&b to study to" # skip the first question
 python -m src.main --baseline                        # the original Module 3 recommender
 python -m pytest -q                                  # 70 tests, no API calls
 python -m eval.run_eval                              # evaluation with real Gemini (about 3 minutes)
+streamlit run app.py                                 # web app: type a request, get 5 songs
 ```
+
+**Web app.** `streamlit run app.py` opens a page at http://localhost:8501. Type a request, keep **Mode** on "AI agent", and click **Find songs** to get the top 5 with scores, reasons, confidence, step count and the trace log path. Switch **Mode** to "Baseline" to compare with the Module 3 recommender. The web app can't ask follow-up questions yet, so use a specific request there (like *romantic bachata*); the terminal version handles vague requests by asking.
 
 Every agent run writes a step-by-step log to `logs/` (one JSON object per line). It records Gemini's one-sentence reason for each step, every tool call, any error or fallback, and the final songs. The path is printed at the end of each run.
 
@@ -302,7 +305,7 @@ All four reliability methods from the project spec are used:
 | Automated tests | `tests/` (pytest, `MockClient` and `ScriptedIO`, no API calls) | 70 of 70 pass |
 | Confidence scoring | `PickChecker` rates every result high / medium / low | Shown on every run |
 | Logging and error handling | Every tool returns `ok` + `error` instead of crashing; `TraceLogger` writes each step to `logs/` | Errors go back to the agent to fix; failures fall back with a reason |
-| Human evaluation | I judge the agent's picks for the 6 eval requests | Table in [model_card.md](model_card.md) |
+| Human evaluation | I judge the agent's picks for the 6 eval requests | 4 of 6 felt right to me. "Sad" (3 of 5 actually sad) and "polka" (no polka in the catalog) were weak. Table in [model_card.md](model_card.md) |
 
 **Guardrail examples** (real outputs from the code):
 
@@ -334,9 +337,18 @@ All four reliability methods from the project spec are used:
 | Vague request | recommend me some music | asks a question; 2+ of 5 are afrobeats | PASS | high | 4 | no |
 | Genre not in catalog | polka music for my grandma | only real songs; 2+ of 5 have a happy mood | PASS | high | 5 | no |
 
+This table is run 3 (Nov 18), the run I reviewed by hand. Later runs also passed 6 of 6, but step counts and picks changed a little (for example, polka took 5 steps in one run and 6 in another). The newest run is always in [eval/latest_results.md](eval/latest_results.md).
+
 **Summary:** 6 of 6 cases passed. Confidence was high in 6 of 6. The Module 3 baseline fit 1 of 6 requests.
 
 It took three runs to get there. Run 1 scored 5 of 6 because running the cases back to back hit Gemini's free-tier limit of 15 requests a minute. Run 2 scored 5 of 6 because the agent kept searching for "sad" songs and ran out of steps. Run 3 scored 6 of 6 after one prompt change telling it to rank the whole catalog instead. The full table, run history and human evaluation are in the [model card](model_card.md).
+
+## Stretch features
+
+| Stretch feature | What I built | Where to see it |
+| --- | --- | --- |
+| **Agentic Workflow Enhancement** | The agent plans and reasons over several steps (ask → search → rank → check → revise), calls tools, and makes a decision at each step. Its reason for every step is saved to a trace log. | [ai_interactions.md](ai_interactions.md): three real traces explained step by step (a clear request, recovering from a broken reply, and asking about a missing genre), with links to the full logs in [assets/evidence/](assets/evidence/) |
+| **Test Harness / Evaluation Script** | `eval/run_eval.py` runs the agent on 6 fixed requests and prints PASS/FAIL, confidence, steps and a summary, compared with the Module 3 baseline | The [Evaluation](#evaluation) section above and [eval/latest_results.md](eval/latest_results.md) |
 
 ---
 
@@ -385,7 +397,9 @@ More detail, with GRASP and SOLID, is in [docs/design.md](docs/design.md).
 - **Genre is exact-match only.** Lofi gets no credit for ambient or jazz, even though they sound alike.
 - **No listening history.** The system can't learn from plays, skips or likes, so it can't tell what you actually enjoy.
 - **Gemini's choices vary.** The same request can give slightly different profiles and picks between runs. The guardrails keep every result real and checked, but not identical.
-- **Free-tier limits.** Gemini's free tier allows 15 requests a minute; one agent run uses 3 to 5. If a limit is hit, the app falls back instead of failing.
+- **Missing genres get filler songs.** There's no polka in the catalog, so a polka request still returns 5 songs, mostly ones that sound nothing like polka. The automatic evaluation passes this case; my own review rated it "way off."
+- **Gemini can assume things nobody said.** In one polka run it treated the answer "something happy and upbeat" as "happy folk." The trace log showed it ([ai_interactions.md](ai_interactions.md), trace 3).
+- **Free-tier limits.** Gemini's free tier allows 15 requests a minute; one agent run uses 3 to 6. If a limit is hit, the app falls back instead of failing.
 - **The `Recommender` class is still a starter stub.** `Recommender.recommend()` returns the first *k* songs without scoring, and `explain_recommendation()` returns a placeholder. The app never uses it. The starter tests in `tests/test_recommender.py` still pass, but only because the expected pop song happens to be first in the test's list and the placeholder text isn't empty. The real scoring is `score_song` and `recommend_songs`.
 
 ---
@@ -400,9 +414,18 @@ described above are built and working. Next steps:
    measured data instead of my guesses, and the catalog grows past 47 songs.
 2. **Full-stack web app.** Serve the agent through a FastAPI backend and
    build a React chat interface, with follow-up questions in the chat,
-   live agent steps, and song cards. Today the agent runs in the terminal.
+   live agent steps, and song cards. Today there's the terminal app and a basic
+   Streamlit web app (`app.py`) that can't ask follow-up questions yet.
 3. **Feedback loop.** Let listeners like or skip each song, save that feedback,
    and use it to adjust their taste profile on the next request.
+
+---
+
+## Portfolio
+
+**Code:** [github.com/irodriguez2011/applied-ai-system-final](https://github.com/irodriguez2011/applied-ai-system-final)
+
+**What this project says about me as an AI engineer:** I build AI systems I can check. I let the AI do what it's good at, understanding plain requests and choosing the next step, and kept the scoring, checks and fallback in code I can test. I test with real data I understand, which is why I used songs from my own library instead of popular hits an AI suggested. And I don't stop at "the tests pass": I ran the real agent, measured it, and listened to the picks myself, which is how I found the rate limit, the over-searching and the weak "sad" picks that the automated tests missed.
 
 ---
 

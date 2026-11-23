@@ -181,7 +181,7 @@ What I learned from these:
 
 `python -m eval.run_eval` runs the agent with real Gemini on 6 fixed requests. Scripted answers stand in for the listener's replies. A case passes only if the agent finishes on its own (no fallback), recommends only real songs that pass the self-check, stays within 8 steps, and meets the case's fit rule. The same fit rule is applied to the Module 3 baseline.
 
-Latest run (Nov 18):
+The run I reviewed by hand (Nov 18, run 3 below):
 
 | Case | Request | Fit rule | Agent | Confidence | Steps | Questions | Baseline fits? | Top 3 picks |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -194,7 +194,9 @@ Latest run (Nov 18):
 
 6 of 6 cases passed. Confidence was high in 6 of 6. The Module 3 baseline fit 1 of 6 requests.
 
-I ran the evaluator three times. Each failure showed a different real problem:
+Later runs also passed 6 of 6, but the picks and step counts changed a little each time (for example, the polka case took 5 steps in one run and 6 in another). Gemini builds a slightly different profile each run; the scoring is the same every time. The newest run is always in `eval/latest_results.md`.
+
+I ran the evaluator three times while fixing problems. Each failure showed a different real problem:
 
 | Run | What I changed | Result | What went wrong |
 | --- | --- | --- | --- |
@@ -206,12 +208,19 @@ I ran the evaluator three times. Each failure showed a different real problem:
 
 | Test input | Evaluation criteria | Result |
 | --- | --- | --- |
-| something chill to study to | Would I actually study to all 5? Nothing distracting or high-energy? | *(to fill in)* |
-| high energy songs for a party | Would all 5 work at a party? | *(to fill in)* |
-| romantic bachata | Are they bachata, and do they feel romantic, not just upbeat? | *(to fill in)* |
-| sad songs for a rainy day | Do they feel sad or reflective? | *(to fill in)* |
-| recommend me some music → afrobeats, something happy | Was the follow-up question useful? Do the picks match my answer? | *(to fill in)* |
-| polka music for my grandma | Did it handle a genre it doesn't have sensibly? | *(to fill in)* |
+| something chill to study to | Would I actually study to all 5? Nothing distracting or high-energy? | **5 of 5.** All of them work for studying. |
+| high energy songs for a party | Would all 5 work at a party? | **5 of 5, mostly.** They fit, but I didn't recognize Sunrise City. It's one of the made-up starter songs from Module 3, so it ranks well on its numbers even though it isn't a real song I know. |
+| romantic bachata | Are they bachata, and do they feel romantic, not just upbeat? | **5 of 5.** They're fine. One thing I noticed: R&B can be romantic too, but because I named bachata, the agent stuck to bachata. |
+| sad songs for a rainy day | Do they feel sad or reflective? | **3 of 5.** Bachata en Fukuoka isn't sad, and Best Part is a love song. The scores rely on my mood labels and numbers, and a song can be slow or soft without being sad. |
+| recommend me some music → afrobeats, something happy | Was the follow-up question useful? Do the picks match my answer? | **Good.** The question helped and the picks matched, except I didn't recognize Sunrise City (a made-up starter song). |
+| polka music for my grandma | Did it handle a genre it doesn't have sensibly? | **Way off.** It didn't break and only recommended real catalog songs, but most of them sound nothing like polka. There's no polka in the catalog, so it fell back to "happy" songs. |
+
+**What the human evaluation showed.** The automated fit rules passed all 6 cases, but my own judgment found two weak spots:
+
+- **Sad mood (3 of 5).** A rule like "2+ of 5 have a sad or longing mood" can pass even when some picks aren't sad. The picks are only as good as the mood labels in `songs.csv`.
+- **Missing genre (way off).** The agent handled polka safely, with no made-up songs and no crash, but "safe" isn't the same as "useful." When the catalog doesn't have a genre, the agent should say so clearly instead of filling the list with songs that don't fit.
+
+I also noticed that Sunrise City, one of the made-up Module 3 starter songs, showed up in 3 of 6 cases. Its numbers score well across many requests, so it keeps appearing even though it isn't a real song.
 
 ---
 
@@ -246,6 +255,9 @@ Smaller fixes:
 - Add a tie-break rule, such as "closer energy wins."
 - ~~Check that numeric targets are in a valid range before scoring.~~ Done in 2.0: `ProfileValidator` blocks out-of-range values.
 - For activity requests like "study" or "workout", have the agent always ask about genre, because the right music depends on the person, not the activity.
+- When a genre isn't in the catalog (like polka), say so clearly in the answer and show fewer songs, instead of filling the list with songs that don't fit.
+- Replace the made-up starter songs (like *Sunrise City*) with real songs, so every pick is something a listener can actually find.
+- Recommend songs from outside the catalog. Gemini knows many songs, but my code can only score a song if it has its 7 numbers. The safe way would be to look each song up in a real music database, check it exists, validate its numbers like `ProfileValidator` does, and label those picks separately from the checked catalog picks.
 
 ---
 
@@ -289,7 +301,7 @@ It also fooled me in the other direction. Some results looked reasonable but hap
 - Let users pick several genres and favorite artists.
 - Use likes and skips to learn what someone really enjoys, like real apps do.
 - Use real song data instead of estimates.
-- Add a tie-break rule and check for bad inputs.
+- Add a tie-break rule. (Checking for bad inputs is now done in 2.0.)
 - Try mixing in a little variety, so the top 5 isn't always the same type of song.
 
 ---
@@ -303,6 +315,10 @@ It also fooled me in the other direction. Some results looked reasonable but hap
 - **Gemini isn't perfectly consistent.** The same request can produce a slightly different profile and different picks between runs. The guardrails make sure every result is real and checked, but not identical.
 - **Confidence is narrow.** It's based only on the top song's score, so it says how good a match the catalog has, not whether the listener will actually like the songs.
 - **No listening history.** It can't learn from plays, skips or likes.
+- **Vague words are hard to turn into numbers.** For a request like "something to vibe to while cleaning," Gemini has to guess what "vibe" means as energy, mood and tempo. Different people mean different things, and the system can only guess unless it asks.
+- **Gemini can assume things nobody said.** In one polka run, Gemini asked "folk, pop, or rock?", got the answer "something happy and upbeat," and then treated it as "happy folk." The trace log showed this; the checks didn't catch it, because the picks were still real songs.
+- **Missing genres get filler songs.** When the catalog has no polka, the agent still returns 5 songs, mostly ones that sound nothing like polka. My automatic evaluation passed this case, but I rated it "way off."
+- **The made-up starter songs keep showing up.** *Sunrise City* has numbers that score well for many requests, so it appeared in half of my evaluation cases even though it isn't a real song.
 
 ---
 
@@ -326,6 +342,8 @@ It also fooled me in the other direction. Some results looked reasonable but hap
 - **A one-paragraph prompt change fixed the agent's behavior.** After I told it to rank the whole catalog instead of searching again and again, run 3 scored 6 of 6, and steps per request dropped from up to 8 to 3–5.
 - **A fallback without a profile is much worse.** My own first run fell back with "key not set" even though my key was in `.env`: my terminal already had a blank `GEMINI_API_KEY`, and the `.env` loader doesn't overwrite it. With no profile from the agent, the fallback used its generic pop default and gave upbeat songs for studying. I fixed the loader (`override=True`).
 - **Copying a working setup didn't just work.** The model name from Module 5's BugHound (`gemini-flash-lite-latest`) returned 404 with my key. I pinned a specific version, which also keeps the agent's behavior from changing when Google updates an alias.
+- **Passing the evaluation didn't mean the picks were good.** The automatic evaluation passed 6 of 6, but when I judged the picks myself, only 4 of 6 felt right. For "sad songs," 2 of the 5 weren't sad (one is a love song), and for polka most picks sounded nothing like polka. Automatic rules check labels; only a person can check how songs feel.
+- **The trace log helped me find out why a result was bad.** My polka picks were off, and reading Gemini's "thought" for each step showed why: it assumed I wanted folk, which I never said. Without the log I would only have seen the final songs.
 - **"Medium" confidence was honest, not a bug.** For "music for studying", Gemini chose ambient + focused, and no song in my catalog is both. The best song scored 79.94, just under the 80 cutoff for "high".
 
 ---

@@ -4,6 +4,16 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 
 ## [Unreleased]: VibeMatch 2.0 (Project 4)
 
+### 2026-11-22: Web app and portfolio
+- Added `app.py`, a Streamlit web app: type a request, switch between "AI agent" and "Baseline", and see the top 5 with scores, reasons, confidence and steps. It can't ask follow-up questions yet.
+- README: web app run command, a note that later evaluation runs vary slightly but still pass 6 of 6, and a Portfolio section with the code link and what this project says about me as an AI engineer.
+
+### 2026-11-18: Human evaluation and stretch features
+- Filled in the human evaluation in `model_card.md`: 4 of 6 requests felt right to me. "Sad" (3 of 5 actually sad) and "polka" (no polka in the catalog) were weak, even though the automatic evaluation passed them.
+- Rewrote `ai_interactions.md` (it was the blank Module 3 template) with three real agent traces explained step by step: a clear request, recovering from a broken reply, and asking about a missing genre.
+- `model_card.md`: added limitations and surprises found in the human evaluation and trace logs (missing genres, Gemini's assumptions, vague words, the made-up starter songs), new improvement ideas, and a note that later evaluation runs vary slightly but still pass 6 of 6. README limitations updated to match.
+- Added two trace logs to `assets/evidence/` and a "Stretch features" section to the README (Agentic Workflow Enhancement and the evaluation script).
+
 ### 2026-11-18: Final docs
 - Redrew `diagrams/architecture.mmd` to match the agent as built, embedded it in the README, and added a rendered image, `diagrams/architecture.png`.
 - Rewrote `README.md`: summary, how the agent works, scoring, setup with `.env`, run commands, 3 real sample runs, baseline comparison, a guardrail input → behavior → result table, the evaluation, and limitations. Removed starter text and claims that weren't true (an outdated expected-results table, a tie-break rule the code never had, and `Recommender.recommend()` using the scoring code).
