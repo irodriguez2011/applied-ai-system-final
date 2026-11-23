@@ -429,7 +429,7 @@ described above are built and working. Next steps:
 
 ## What this project says about me as an AI engineer
 
-I build AI systems I can check. I let the AI do what it's good at, understanding plain requests and choosing the next step, and kept the scoring, checks and fallback in code I can test. I test with real data I understand, which is why I used songs from my own library instead of popular hits an AI suggested. And I don't stop at "the tests pass": I ran the real agent, measured it, and listened to the picks myself, which is how I found the rate limit, the over-searching and the weak "sad" picks that the automated tests missed.
+I build AI systems I can check. I let the AI do what it's good at, understanding plain requests and choosing the next step, and kept the scoring, checks and fallback in code I can test. I still lean on the fundamentals: I reviewed the design against SOLID and GRASP ([docs/design.md](docs/design.md)), which is why the agent receives its AI client instead of creating it, so tests can swap in a fake Gemini and a scripted listener. My tests check behavior, what the system does with a bad profile or a failed API call, not how the code is written inside. I test with real data I understand, which is why I used songs from my own library instead of popular hits an AI suggested. And I don't stop at "the tests pass": I ran the real agent, measured it, and listened to the picks myself, which is how I found the rate limit, the over-searching and the weak "sad" picks that the automated tests missed. Next, I'd add mutation testing to prove my tests catch real bugs, not just pass.
 
 ---
 
