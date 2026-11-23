@@ -6,6 +6,7 @@ How VibeMatch grew from the Module 3 recommender (1.0) into the Project 4 applie
 
 ### 2026-11-22: Web app and portfolio
 - Added `app.py`, a Streamlit web app: type a request, switch between "AI agent" and "Baseline", and see the top 5 with scores, reasons, confidence and steps. It can't ask follow-up questions yet.
+- Added a screenshot of a real web app run (`assets/screenshots/web_app_romantic_bachata.jpg`) to the README.
 - README: web app run command, a note that later evaluation runs vary slightly but still pass 6 of 6, and a Portfolio section with the code link and what this project says about me as an AI engineer.
 
 ### 2026-11-18: Human evaluation and stretch features

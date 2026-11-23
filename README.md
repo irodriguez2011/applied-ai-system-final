@@ -205,6 +205,10 @@ streamlit run app.py                                 # web app: type a request, 
 
 **Web app.** `streamlit run app.py` opens a page at http://localhost:8501. Type a request, keep **Mode** on "AI agent", and click **Find songs** to get the top 5 with scores, reasons, confidence, step count and the trace log path. Switch **Mode** to "Baseline" to compare with the Module 3 recommender. The web app can't ask follow-up questions yet, so use a specific request there (like *romantic bachata*); the terminal version handles vague requests by asking.
 
+<img src="assets/screenshots/web_app_romantic_bachata.jpg" alt="VibeMatch 2.0 web app showing the request romantic bachata and the top 5 songs with scores, reasons, high confidence and 3 agent steps" width="600">
+
+*A real run of the web app (Nov 22, 2026): "romantic bachata" returned 3 bachata songs in the top 5, high confidence, in 3 agent steps.*
+
 Every agent run writes a step-by-step log to `logs/` (one JSON object per line). It records Gemini's one-sentence reason for each step, every tool call, any error or fallback, and the final songs. The path is printed at the end of each run.
 
 ---
